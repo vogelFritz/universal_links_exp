@@ -8,7 +8,15 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/',
       builder: (_, _) => HomeScreen(),
-      routes: [GoRoute(path: '/enroll', builder: (_, _) => EnrollScreen())],
+      routes: [
+        GoRoute(
+          path: '/enroll',
+          builder: (_, state) {
+            final enrollToken = state.uri.queryParameters['enroll_token'];
+            return EnrollScreen(enrollToken);
+          },
+        ),
+      ],
     ),
   ],
 );
