@@ -5,6 +5,13 @@ class EnrollScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Center(
+        child: Column(
+          spacing: 16,
+          children: [Text('EnrollScreen'), Icon(Icons.check)],
+        ),
+      ),
+    );
   }
 }
