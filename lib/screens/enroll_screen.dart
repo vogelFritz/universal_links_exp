@@ -14,45 +14,50 @@ class EnrollScreen extends StatelessWidget {
       child: Builder(
         builder: (context) {
           return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 16,
-                children: [
-                  Text('EnrollScreen'),
-                  Icon(Icons.check),
-                  Text('Enroll Token:'),
-                  Text(enrollToken ?? 'NULL'),
-                  if (enrollToken != null)
-                    Builder(
-                      builder: (context) {
-                        final status = context.select(
-                          (TestProvider p) => p.status,
-                        );
-                        final error = context.select(
-                          (TestProvider p) => p.error,
-                        );
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          spacing: 10,
-                          children: [
-                            TextButton(
-                              onPressed: status == TestStatus.inProgress
-                                  ? null
-                                  : () => context.read<TestProvider>().test(
-                                      enrollToken!,
-                                    ),
-                              child: Text('Test'),
-                            ),
-                            if (status == TestStatus.inProgress)
-                              CircularProgressIndicator(),
-                            if (error != null) Text(error),
-                            if (status == TestStatus.success) Icon(Icons.check),
-                          ],
-                        );
-                      },
-                    ),
-                ],
+            body: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 16,
+                    children: [
+                      Text('EnrollScreen'),
+                      Icon(Icons.check),
+                      Text('Enroll Token:'),
+                      Text(enrollToken ?? 'NULL'),
+                      if (enrollToken != null)
+                        Builder(
+                          builder: (context) {
+                            final status = context.select(
+                              (TestProvider p) => p.status,
+                            );
+                            final error = context.select(
+                              (TestProvider p) => p.error,
+                            );
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              spacing: 10,
+                              children: [
+                                TextButton(
+                                  onPressed: status == TestStatus.inProgress
+                                      ? null
+                                      : () => context.read<TestProvider>().test(
+                                          enrollToken!,
+                                        ),
+                                  child: Text('Test'),
+                                ),
+                                if (status == TestStatus.inProgress)
+                                  CircularProgressIndicator(),
+                                if (error != null) Text(error),
+                                if (status == TestStatus.success)
+                                  Icon(Icons.check),
+                              ],
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           );
@@ -77,8 +82,8 @@ class TestProvider extends ChangeNotifier {
     try {
       await testEndpoints(enrollToken);
       _status = TestStatus.success;
-    } catch (e) {
-      _error = e.toString();
+    } catch (e, st) {
+      _error = '$e\n$st';
       _status = TestStatus.failure;
     }
     notifyListeners();
