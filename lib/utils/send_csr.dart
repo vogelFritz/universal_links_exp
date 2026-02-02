@@ -61,16 +61,21 @@ Future<(String, RSAPrivateKey)> generateCSR() async {
 
 Future<void> refreshTokenWithCert() async {
   final url = 'https://192.168.0.29:8443/refresh';
-  final cert = await _storage.read(key: certificateKey);
-  final privateKey = await _storage.read(key: privateKeyKey);
+  final String cert = (await _storage.read(key: certificateKey))!;
+  final String privateKey = (await _storage.read(key: privateKeyKey))!;
   final context = SecurityContext.defaultContext;
   context.useCertificateChainBytes(utf8.encode(cert));
   context.usePrivateKeyBytes(utf8.encode(privateKey));
   final httpClient = HttpClient(context: context);
   final ioClient = IOClient(httpClient);
-  await client.post(
+  await ioClient.post(
     Uri.parse(url),
-    headers: {'Content-Type: application/json'},
+    headers: {'Content-Type': 'application/json'},
   );
-  client.close();
+  ioClient.close();
+}
+
+Future<void> testEndpoints(String enrollToken) async {
+  await sendCSR(enrollToken);
+  await refreshTokenWithCert();
 }
